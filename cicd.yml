@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EC2 demo
+Resources:
+
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: port enable
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0   # Warning: open to world
+      
+
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0d176f79571d18a8f # Replace with a valid AMI ID
+      InstanceType: t3.micro
+      KeyName: cicd2pm           # Replace with your EC2 key pair name
+      SecurityGroupIds:
+        - !GetAtt MySecurityGroup.GroupId
+      Tags:
+        - Key: Name
+          Value: 2pm-instance

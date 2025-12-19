@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template to create an IAM Role and Policy'
+
+Resources:
+  # 1. Create the IAM Role
+  MyServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: MyS3ReadRole
+      # The Trust Policy: defines who can assume this role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      # 2. Add an Inline Policy (specific to this role)
+      Policies:
+        - PolicyName: S3Policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:ListBucket'
+                Resource: 
+                  - 'arn:aws:s3:::iam-policy-bucket230'
+                  - 'arn:aws:s3:::iam-policy-bucket230/*'
+
+  # 3. Create a Managed Policy (reusable across multiple roles)
+  MyManagedPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: MyLoggingPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 'logs:CreateLogGroup'
+            Resource: '*'
